@@ -150,9 +150,6 @@ public class ApnEditor extends PreferenceActivity
         mAuthType = (ListPreference) findPreference("auth_type");
         mAuthType.setOnPreferenceChangeListener(this);
 
-        mProtocol = (ListPreference) findPreference(KEY_PROTOCOL);
-        mProtocol.setOnPreferenceChangeListener(this);
-
         mRes = getResources();
 
         final Intent intent = getIntent();
@@ -324,10 +321,15 @@ public class ApnEditor extends PreferenceActivity
         String key = preference.getKey();
         if (KEY_AUTH_TYPE.equals(key)) {
             try {
-                setListPreferenceSummary(mAuthType, R.array.apn_auth_entries, newValue);
+                int index = Integer.parseInt((String) newValue);
+                mAuthType.setValueIndex(index);
+
+                String []values = mRes.getStringArray(R.array.apn_auth_entries);
+                mAuthType.setSummary(values[index]);
             } catch (NumberFormatException e) {
                 return false;
             }
+            return true;
         }
 
         if (KEY_IP.equals(key)) {
@@ -338,16 +340,7 @@ public class ApnEditor extends PreferenceActivity
             }
             return true;
         }
-
-        if (KEY_PROTOCOL.equals(key)) {
-            String protocol = protocolDescription((String) newValue);
-            if (protocol == null) {
-                return false;
-            }
-            mProtocol.setSummary(protocol);
-            mProtocol.setValue((String) newValue);
-        }
-        return true;
+     return true;
     }
 
     @Override
